@@ -44,54 +44,57 @@ function PartyListItem(party) {
   <a href="#selected">${party.name}</a>`;
   $li.addEventListener("click", async function () {
     await getParty(party.id);
-    console.log(selectedParty);
+    render();
   });
   return $li;
 }
 
 function PartyList() {
   const $ul = document.createElement("ul");
-  $ul.classList.add("lineup");
+  $ul.classList.add("parties");
   const $parties = parties.map(PartyListItem);
   $ul.replaceChildren(...$parties);
   return $ul;
 }
 
-function PartyDetails() {
+function SelectedParty() {
   if (!selectedParty) {
     const $p = document.createElement("p");
     $p.textContent = "Select an event to learn more!";
     return $p;
   }
-  const $section = document.createElement("section");
-  $section.classList.add("party");
-  $section.innerHTML = `
-  <h3>${selectedParty.name} ${selectedParty.id}</h3>
-  <figure>
-    <p>${selectedParty.location} ${selectedParty.date}</p>
-  </figure>
+  const $party = document.createElement("section");
+  $party.innerHTML = `
+  <h3>${selectedParty.name} #${selectedParty.id}</h3>
+  <time datetime="${selectedParty.date}">
+  ${selectedParty.date.slice(0, 10)}</time>
+  <address>${selectedParty.location}</address>
   <p>${selectedParty.description}</p>
   `;
-  return $section;
+  return $party;
 }
 
 function render() {
   const $app = document.querySelector("#app");
   $app.innerHTML = `
+    <h1>Party Planner</h1>
+    <main>
+        <section>
+            <h2>Upcoming Parties</h2>
+            <PartyList></PartyList>
+    </section>
     <section>
-      <h2>Events</h2>
-      <div id="party-list-container"></div>  </section>
-    <section id="selected">
-      <h2>Party Details</h2>
-      <div id="party-details-container"></div>  </section>
+            <h2>Party Details</h2>
+            <SelectedParty></SelectedParty>
+        </section>
+    </main>
     `;
-  $app.querySelector("#party-list-container").replaceWith(PartyList());
-  $app.querySelector("#party-details-container").replaceWith(PartyDetails());
+  $app.querySelector("PartyList").replaceWith(PartyList());
+  $app.querySelector("SelectedParty").replaceWith(SelectedParty());
 }
 
 async function init() {
   await getParties();
-
   render();
 }
 
